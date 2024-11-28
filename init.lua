@@ -1,2 +1,5 @@
-require('config.lazy')
-require('general_settings')
+require('core.bootstrap')
+require('plugins.package_manager.lazy')
+require('core.options')
+require('core.autocmds')
+require('core.keymaps')
