@@ -10,6 +10,7 @@ return {
     },
     opts = {
         defaults = {
+            path_display = {"smart"},
             layout_config = {
                 horizontal = {
                     prompt_position = "top",
