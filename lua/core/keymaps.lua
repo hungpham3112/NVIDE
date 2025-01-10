@@ -16,6 +16,8 @@ vim.keymap.set('n', "<S-h>", ":tabprevious<CR>", { noremap = true})
 -- Remap <C-/> to comment in normal mode
 -- Toggle comments using Ctrl-/
 
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+
 -- Set clipboard to use system clipboard (unnamedplus)
 vim.opt.clipboard:append("unnamedplus")
 
@@ -35,7 +37,7 @@ end
 M.pick_directory = function()
   telescope.find_files({
     prompt_title = "Pick a Directory",
-    find_command = { 'fd', '--type', 'd', '-H', '--exclude', '.git/', '.', 'C:\\' },
+    find_command = { 'fd', '--type', 'd', '-H', '--exclude', '.git/', '.', '/' },
     
     attach_mappings = function(prompt_bufnr, map)
       local select_directory = function()
