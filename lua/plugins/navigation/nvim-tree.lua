@@ -14,7 +14,4 @@ return {
             width = 40,     -- Width of the tree window
         },
     },
-    config = function(_, opts)
-        require('nvim-tree').setup(opts) -- Pass opts to setup
-    end
 }

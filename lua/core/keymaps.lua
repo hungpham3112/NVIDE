@@ -38,24 +38,19 @@ M.pick_directory = function()
   telescope.find_files({
     prompt_title = "Pick a Directory",
     find_command = { 'fd', '--type', 'd', '-H', '--exclude', '.git/', '.', '/' },
-    
     attach_mappings = function(prompt_bufnr, map)
       local select_directory = function()
         local selection = action_state.get_selected_entry()
         if selection then
           actions.close(prompt_bufnr)
-          
           local dir_path = selection.path
           vim.cmd('cd ' .. vim.fn.fnameescape(dir_path))
-          
 
           M.pick_files_in_directory(dir_path)
         end
       end
-      
       map('i', '<CR>', select_directory)
       map('n', '<CR>', select_directory)
-      
       return true
     end
   })
