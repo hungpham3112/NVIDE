@@ -60,11 +60,13 @@ return {
 
         },
         -- Sources are interface of blink.cmp for getting LSP's suggestions
+        cmdline = {
+            enabled = false,
+        },
         sources =
         {
             default = { 'lsp', 'path', 'snippets', 'buffer' },
             -- Disable autocomplete for cmdline mode
-            cmdline = {},
         },
         -- Highlight the augument suggestions when typing
         signature =
