@@ -1,10 +1,10 @@
-vim.api.nvim_create_autocmd({"BufEnter"}, {
-    pattern = {"*"},
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+    pattern = { "*" },
     command = "silent! lcd %:p:h",
 })
 
-vim.api.nvim_create_autocmd({"FileType"}, {
-    pattern = {"*"},
+vim.api.nvim_create_autocmd({ "FileType" }, {
+    pattern = { "*" },
     callback = function()
         vim.opt.formatoptions:remove("o")
         vim.opt.formatoptions:append("j")
@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd({"FileType"}, {
 vim.api.nvim_create_autocmd("BufEnter", {
     pattern = "*",
     callback = function()
-        vim.wo.cursorline = true  -- Enable cursorline
+        vim.wo.cursorline = true   -- Enable cursorline
         vim.wo.cursorcolumn = true -- Enable cursorcolumn
     end,
 })
