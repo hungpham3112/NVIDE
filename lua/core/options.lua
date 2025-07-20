@@ -1,6 +1,5 @@
 -- General settings
 vim.opt.titlestring = "VIDE"                     -- Change title vim
-vim.g.mapleader = " "                            -- Map leader to Space for convenience
 vim.opt.autoindent = true                        -- Auto indent
 vim.opt.autoread = true                          -- Read file if it has been changed outside
 vim.opt.autowriteall = true                      -- Autowrite if file has been modified
@@ -40,3 +39,31 @@ vim.opt.ttimeoutlen = 50                         -- Time response keystroke
 vim.opt.updatetime = 200                         -- Make autocomplete faster
 vim.opt.viewoptions:remove("options")            -- Change behavior :mkview
 vim.opt.wildignorecase = true                    -- Ignore case-sensitive command-mode
+
+-- Set shell dynamically
+local sys = vim.uv.os_uname().sysname
+
+if sys == "Windows_NT" then
+  local shell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
+
+  vim.opt.shell = shell
+  vim.opt.shellcmdflag = table.concat({
+    "-NoLogo", "-NonInteractive", "-ExecutionPolicy RemoteSigned", "-Command",
+    "[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();" ..
+    "$PSDefaultParameterValues['Out-File:Encoding']='utf8';" ..
+    "$PSStyle.OutputRendering='plaintext';" ..
+    "Remove-Alias -Force -ErrorAction SilentlyContinue tee;"
+  }, " ")
+  vim.opt.shellredir = '2>&1 | ForEach-Object { "$_" } | Out-File %s; exit $LastExitCode'
+  vim.opt.shellpipe  = '2>&1 | ForEach-Object { "$_" } | tee %s; exit $LastExitCode'
+  vim.opt.shellquote = ""
+  vim.opt.shellxquote = ""
+else
+  local shell = vim.fn.executable("zsh") == 1 and "zsh" or "/bin/bash"
+  vim.opt.shell = shell
+  vim.opt.shellcmdflag = "-c"
+  vim.opt.shellredir = ">%s 2>&1"
+  vim.opt.shellpipe = "2>&1 | tee %s"
+  vim.opt.shellquote = ""
+  vim.opt.shellxquote = ""
+end
