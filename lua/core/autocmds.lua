@@ -46,3 +46,13 @@ vim.api.nvim_create_autocmd("CmdLineLeave", {
         vim.opt.smartcase = true -- Re-enable smartcase when leaving command-line mode
     end,
 })
+
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+    command = "if mode() != 'c' | checktime | endif",
+})
+
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+    callback = function()
+        vim.notify("File reloaded (changed externally)", vim.log.levels.INFO)
+    end,
+})
