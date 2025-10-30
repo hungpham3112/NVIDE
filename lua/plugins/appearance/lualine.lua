@@ -12,6 +12,7 @@ return {
             lualine_b = { 'branch', 'diff', 'diagnostics' },
             lualine_c = {
                 {
+                    "filename",
                     path = 3, -- 3: Absolute path, with tilde as the home directory
                     shorting_target = 40,
                 }
