@@ -58,5 +58,45 @@ return {
                 )
             end,
         })
+
+        -- ============= --
+        -- clangd setup  --
+        -- ============= --
+        local function get_binary_path(binary)
+            local handle = io.popen("which " .. binary .. " 2>/dev/null")
+            if not handle then return "" end
+            local result = handle:read("*a")
+            handle:close()
+            return result:gsub("%s+", "")
+        end
+
+        local compiler_names = {
+            "c++", "g++", "clang++", "clang", "gcc",
+            "aarch64-linux-gnu-g++", "aarch64-linux-gnu-gcc"
+        }
+        local valid_drivers = {
+            "/usr/bin/c++", "/usr/bin/g++", "/usr/bin/clang*", "/usr/bin/gcc*",
+            "/usr/bin/aarch64-linux-gnu-*"
+        }
+
+        for _, name in ipairs(compiler_names) do
+            local path = get_binary_path(name)
+            if path ~= "" and not path:match("^/usr/bin") then
+                table.insert(valid_drivers, path)
+            end
+        end
+
+        vim.lsp.config('clangd', {
+            capabilities = capabilities,
+            cmd = {
+                "clangd",
+                "--background-index",
+                "--clang-tidy",
+                "--log=verbose",
+                "--query-driver=" .. table.concat(valid_drivers, ",") -- Inject Dynamic Driver vào đây
+            },
+        })
+
+        vim.lsp.enable('clangd')
     end
 }
