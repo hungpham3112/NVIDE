@@ -62,6 +62,16 @@ return {
         -- ============= --
         -- clangd setup  --
         -- ============= --
+        
+        -- Add C++ filetype associations
+        vim.filetype.add({
+            extension = {
+                tpp = "cpp",
+                inl = "cpp",
+                ipp = "cpp",
+            }
+        })
+
         local function get_binary_path(binary)
             local handle = io.popen("which " .. binary .. " 2>/dev/null")
             if not handle then return "" end
@@ -92,9 +102,9 @@ return {
                 "clangd",
                 "--background-index",
                 "--clang-tidy",
-                "--log=verbose",
                 "--query-driver=" .. table.concat(valid_drivers, ",") -- Inject Dynamic Driver vào đây
             },
+            filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto", "tpp", "inl", "ipp" }
         })
 
         vim.lsp.enable('clangd')
