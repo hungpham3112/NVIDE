@@ -1,7 +1,10 @@
 -- Basic Auto Commands
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
     pattern = { "*" },
-    command = "silent! lcd %:p:h",
+    callback = function()
+        local cmd = "silent! lcd %:p:h"
+        vim.cmd(cmd)
+    end,
 })
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
@@ -24,7 +27,7 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
     pattern = "*",
     callback = function()
         if vim.bo.buftype == "help" then
-            vim.cmd("wincmd L")
+            vim.cmd.wincmd("L")
         end
     end,
 })
@@ -94,19 +97,19 @@ local function on_change_logic(bufnr, full_path)
     if exists then
         -- HAPPY PATH: File exists, reload content
         pcall(api.nvim_buf_set_var, bufnr, "file_deleted_on_disk", false)
-        
+
         -- Re-enable autoread if it was disabled
         api.nvim_set_option_value("autoread", true, { buf = bufnr })
-        
+
         if fn.bufwinnr(bufnr) ~= -1 then
             vim.cmd("silent! checktime " .. fn.fnameescape(full_path))
-            vim.cmd("redraw!")
+            vim.api.nvim__redraw({ valid = false })
         end
     else
         -- DANGER PATH: File deleted or moved
         -- Disable autoread immediately to prevent Neovim from checking and throwing E211
         api.nvim_set_option_value("autoread", false, { buf = bufnr })
-        
+
         -- Flag for notification
         pcall(api.nvim_buf_set_var, bufnr, "file_deleted_on_disk", true)
     end
@@ -116,7 +119,7 @@ local function start_fs_watcher(bufnr)
     -- Validate buffer path
     local full_path = api.nvim_buf_get_name(bufnr)
     if full_path == "" then return end
-    
+
     local buftype_ok, buftype = pcall(api.nvim_get_option_value, "buftype", { buf = bufnr })
     if not buftype_ok or buftype ~= "" then return end
 
@@ -134,14 +137,14 @@ local function start_fs_watcher(bufnr)
         if fname == filename or fname == nil then
             local old_t = _G.ns_debounce_timers[bufnr]
             if old_t and not old_t:is_closing() then old_t:stop() end
-            
+
             local t = uv.new_timer()
             if not t then return end
             _G.ns_debounce_timers[bufnr] = t
-            
+
             t:start(DEBOUNCE_DELAY, 0, vim.schedule_wrap(function()
                 on_change_logic(bufnr, full_path)
-                
+
                 local current_t = _G.ns_debounce_timers[bufnr]
                 if current_t and not current_t:is_closing() then
                     current_t:close()
@@ -171,16 +174,16 @@ api.nvim_create_autocmd({ "FocusGained", "BufEnter", "WinEnter" }, {
         if bufnr ~= api.nvim_get_current_buf() then return end
 
         local deleted_flag_exists, deleted = pcall(api.nvim_buf_get_var, bufnr, "file_deleted_on_disk")
-        
+
         if deleted_flag_exists and deleted then
             pcall(api.nvim_buf_set_var, bufnr, "file_deleted_on_disk", false)
-            
+
             local filename = fn.fnamemodify(api.nvim_buf_get_name(bufnr), ":t")
-            
+
             vim.schedule(function()
                 -- Trick: Clear command line to hide E211 if possible
-                api.nvim_echo({{ "", "" }}, false, {})
-                
+                api.nvim_echo({ { "", "" } }, false, {})
+
                 vim.notify(
                     "File '" .. filename .. "' deleted on disk!\nBuffer content kept in memory.",
                     vim.log.levels.ERROR,

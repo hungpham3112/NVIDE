@@ -29,7 +29,7 @@ return {
             vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
 
             -- Auto-format on save
-            if client.supports_method("textDocument/formatting") then
+            if client:supports_method("textDocument/formatting") then
                 vim.api.nvim_create_autocmd("BufWritePre", {
                     buffer = bufnr,
                     callback = function()
@@ -38,7 +38,7 @@ return {
                 })
             end
 
-            if client.supports_method("textDocument/inlayHint") then
+            if client:supports_method("textDocument/inlayHint") then
                 vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
             end
         end
@@ -59,10 +59,22 @@ return {
             end,
         })
 
+        vim.lsp.config('lua_ls', {
+            capabilities = capabilities,
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { 'vim' }
+                    }
+                }
+            }
+        })
+        vim.lsp.enable('lua_ls')
+
         -- ============= --
         -- clangd setup  --
         -- ============= --
-        
+
         -- Add C++ filetype associations
         vim.filetype.add({
             extension = {

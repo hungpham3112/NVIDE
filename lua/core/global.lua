@@ -10,9 +10,9 @@ vim.keymap.del('n', "grr")
 
 function _G.smart_bdelete()
     local cur_buf = vim.api.nvim_get_current_buf()
-    vim.cmd('bnext') -- switch to next buffer
+    vim.cmd.bnext() -- switch to next buffer
     if cur_buf ~= vim.api.nvim_get_current_buf() then
-        vim.cmd('bdelete ' .. cur_buf)
+        vim.api.nvim_command('bdelete ' .. cur_buf)
     end
 end
 
