@@ -9,6 +9,10 @@ return {
         { "<leader>e", ":NvimTreeFindFileToggle<CR>", desc = "(E)xplorer", noremap = true, silent = true },
     },
     opts = {
+        filters = {
+            git_ignored = false,
+            dotfiles = false,
+        },
         view = {
             side = "right", -- Open the tree on the right side
             width = 40,     -- Width of the tree window
